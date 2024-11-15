@@ -24,6 +24,11 @@ def get_db_connection():
         print(f"Error al conectar a PostgreSQL: {e}")
         return None
 
+@app.route('/')
+def index():
+    return jsonify({"message": "API en funcionamiento"})
+
+
 # Ruta para el login
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -345,4 +350,4 @@ def registrar_calificacion(id_maestro):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000)
