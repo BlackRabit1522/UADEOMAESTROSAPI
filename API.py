@@ -12,7 +12,7 @@ jwt = JWTManager(app)
 
 @app.route('/')
 def index():
-    return jsonify({"message": "MANUEL LANDEROS MADERA EDAD: ?"})
+    return jsonify({"message": "EL PROXIMO AÑO SE LE PATROCINA LAS CARIÑOSAS AL MOMIN"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
