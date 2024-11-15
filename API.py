@@ -255,6 +255,43 @@ def obtener_alumnos_por_materia(id_maestro):
     connection.close()
 
     return jsonify(alumnos)
+@app.route('/api/materias/<int:id_maestro>/alumnos/materia', methods=['POST'])
+@jwt_required()
+def vincularMatAlumn(id_maestro):
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    id_alumno = data.get('alumno')
+    id_materia = data.get('materia')
+    calificacion = 0  
+    if not id_alumno or not id_materia:
+        return jsonify({"error": "Faltan datos"}), 400
+    if current_user_id != id_maestro:
+        return jsonify({"error": "Acción no permitida"}), 403
+    connection = get_db_connection()
+    if connection is None:
+        return jsonify({"error": "No se pudo conectar a la base de datos"}), 500
+
+    try:
+        cursor = connection.cursor()
+
+        # Insert data into the relationship table
+        cursor.execute("""
+            INSERT INTO alumno_has_materias (id_materia_mat, id_alumno_mat, calificacionmateria)
+            VALUES (%s, %s, %s)
+        """, (id_materia, id_alumno, calificacion))
+        connection.commit()
+
+        return jsonify({"message": "Vinculación exitosa", "id_alumno": id_alumno, "id_materia": id_materia}), 201
+
+    except Exception as e:
+        return jsonify({"error": f"Error al vincular el alumno: {str(e)}"}), 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
 
 #Toma de assitencia
 @app.route('/api/asistencia/<int:id_maestro>/asistencias', methods=['POST'])
@@ -295,7 +332,7 @@ def Toma_asistencia(id_maestro):
     finally:
         cursor.close()
         connection.close()
-        
+
 @app.route('/api/calificaciones/<int:id_maestro>/calificar', methods=['POST'])
 @jwt_required()
 def registrar_calificacion(id_maestro):
